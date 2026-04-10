@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { TradeForm } from "@/components/trading/TradeForm";
+import { BacktestToggle } from "@/components/trading/BacktestToggle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import { LayoutGrid } from "lucide-react";
 
 const JournalRetail = () => {
@@ -18,10 +17,7 @@ const JournalRetail = () => {
             <h1 className="text-3xl font-bold mb-2">Retail Journal</h1>
             <p className="text-slate-400">S/R, Trendlines, and Indicators focus.</p>
           </div>
-          <div className="flex items-center space-x-2 bg-slate-900 p-3 rounded-2xl border border-slate-800">
-            <Switch id="backtest" checked={isBacktest} onCheckedChange={setIsBacktest} />
-            <Label htmlFor="backtest" className="text-xs font-bold uppercase tracking-wider">Backtest Mode</Label>
-          </div>
+          <BacktestToggle isBacktest={isBacktest} onToggle={setIsBacktest} />
         </header>
 
         <Card className="bg-slate-900 border-slate-800 text-white">
