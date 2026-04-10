@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, BookOpen, Droplets, LayoutGrid, Settings, LogOut, TrendingUp } from "lucide-react";
+import { LayoutDashboard, BookOpen, Droplets, LayoutGrid, Settings, LogOut, TrendingUp, BarChart3 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 
@@ -14,6 +14,7 @@ export const Navbar = () => {
 
   const navItems = [
     { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { path: "/analytics", icon: BarChart3, label: "Analytics" },
     { path: "/journal-liquidity", icon: Droplets, label: "Liquidity" },
     { path: "/journal-retail", icon: LayoutGrid, label: "Retail" },
     { path: "/history", icon: BookOpen, label: "History" },
