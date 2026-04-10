@@ -3,10 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { showSuccess, showError } from "@/utils/toast";
-import { Dumbbell } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -31,23 +31,23 @@ const Auth = () => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) showError(error.message);
     else {
-      showSuccess("Welcome back!");
-      navigate("/equipment");
+      showSuccess("Welcome back, Trader.");
+      navigate("/dashboard");
     }
     setLoading(false);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-950 p-4">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(249,115,22,0.1),transparent_50%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent_50%)]" />
       
       <Card className="w-full max-w-md border-slate-800 bg-slate-900/50 backdrop-blur-xl text-white relative z-10">
         <CardHeader className="text-center">
-          <div className="mx-auto bg-orange-500 p-3 rounded-2xl w-fit mb-4 shadow-lg shadow-orange-500/20">
-            <Dumbbell className="w-8 h-8 text-white" />
+          <div className="mx-auto bg-blue-600 p-3 rounded-2xl w-fit mb-4 shadow-lg shadow-blue-600/20">
+            <TrendingUp className="w-8 h-8 text-white" />
           </div>
-          <CardTitle className="text-3xl font-bold tracking-tight">Godlike Physique AI</CardTitle>
-          <CardDescription className="text-slate-400">Forge your ultimate form with AI</CardDescription>
+          <CardTitle className="text-3xl font-bold tracking-tight">FX Journal</CardTitle>
+          <CardDescription className="text-slate-400">Log with discipline. Trade with edge.</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="login" className="w-full">
@@ -77,8 +77,8 @@ const Auth = () => {
                     required
                   />
                 </div>
-                <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-6" disabled={loading}>
-                  {loading ? "Logging in..." : "Login"}
+                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-6" disabled={loading}>
+                  {loading ? "Authenticating..." : "Login to Terminal"}
                 </Button>
               </form>
             </TabsContent>
@@ -104,8 +104,8 @@ const Auth = () => {
                     required
                   />
                 </div>
-                <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-6" disabled={loading}>
-                  {loading ? "Creating account..." : "Sign Up"}
+                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-6" disabled={loading}>
+                  {loading ? "Creating account..." : "Create Trader Profile"}
                 </Button>
               </form>
             </TabsContent>
