@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Trade } from "@/types/trading";
 import { TrendingUp, TrendingDown, Clock, CheckCircle2, XCircle, MessageSquare } from "lucide-react";
-import { format, addMinutes } from "date-fns";
+import { format, addMinutes, startOfWeek, nextMonday } from "date-fns";
 import { cn } from "@/lib/utils";
 import { showSuccess, showError } from "@/utils/toast";
 
@@ -27,19 +27,36 @@ export const TradeCard = ({ trade, onUpdate, onLoss }: TradeCardProps) => {
       // 1. Update trade result
       const { error: tradeError } = await supabase
         .from('trades')
-        .update({ result, exit: trade.entry }) // Simplified exit for now
+        .update({ result, exit: trade.entry })
         .eq('id', trade.id);
 
       if (tradeError) throw tradeError;
 
-      // 2. If loss and not backtest, apply lock
-      if (result === 'loss' && !trade.isBacktest) {
-        const lockedUntil = addMinutes(new Date(), 10).toISOString();
-        await supabase
-          .from('profiles')
-          .update({ locked_until: lockedUntil })
-          .eq('id', user.id);
+      // 2. Handle Locks for Live Trades
+      if (!trade.isBacktest && result === 'loss') {
+        const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
         
+        // Calculate weekly loss
+        const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 }).toISOString();
+        const { data: weeklyTrades } = await supabase
+          .from('trades')
+          .select('risk_percent')
+          .eq('user_id', user.id)
+          .eq('result', 'loss')
+          .eq('is_backtest', false)
+          .gte('created_at', weekStart);
+
+        const totalWeeklyLoss = (weeklyTrades?.reduce((acc, t) => acc + t.risk_percent, 0) || 0);
+        
+        const updates: any = {
+          locked_until: addMinutes(new Date(), 10).toISOString()
+        };
+
+        if (totalWeeklyLoss >= (profile?.max_weekly_loss_percent || 5)) {
+          updates.weekly_loss_lock_until = nextMonday(new Date()).toISOString();
+        }
+
+        await supabase.from('profiles').update(updates).eq('id', user.id);
         onLoss(trade.id);
       }
 

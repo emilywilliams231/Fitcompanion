@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LIQUIDITY_CHECKLIST, RETAIL_CHECKLIST, StrategyName } from "@/types/trading";
 import { showSuccess, showError } from "@/utils/toast";
-import { Loader2, CheckCircle2 } from "lucide-react";
+import { Loader2, CheckCircle2, Lock } from "lucide-react";
+import { useLocks } from "@/hooks/useLocks";
 
 interface TradeFormProps {
   strategyType: StrategyName;
@@ -19,6 +20,7 @@ interface TradeFormProps {
 export const TradeForm = ({ strategyType, isBacktest, onSuccess }: TradeFormProps) => {
   const [loading, setLoading] = useState(false);
   const [checklist, setChecklist] = useState<Record<string, boolean>>({});
+  const { status: lockStatus } = useLocks();
   const [formData, setFormData] = useState({
     pair: "",
     direction: "long",
@@ -29,10 +31,11 @@ export const TradeForm = ({ strategyType, isBacktest, onSuccess }: TradeFormProp
 
   const items = strategyType === 'liquidity' ? LIQUIDITY_CHECKLIST : RETAIL_CHECKLIST;
   const allChecked = items.every(item => checklist[item]);
+  const isLocked = !isBacktest && lockStatus.locked;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!allChecked) return;
+    if (!allChecked || isLocked) return;
 
     setLoading(true);
     try {
@@ -67,6 +70,13 @@ export const TradeForm = ({ strategyType, isBacktest, onSuccess }: TradeFormProp
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {isLocked && (
+        <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center gap-3 text-red-400 text-sm">
+          <Lock className="w-4 h-4" />
+          <span>{lockStatus.message}</span>
+        </div>
+      )}
+
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label>Pair</Label>
@@ -75,12 +85,13 @@ export const TradeForm = ({ strategyType, isBacktest, onSuccess }: TradeFormProp
             value={formData.pair} 
             onChange={e => setFormData(p => ({ ...p, pair: e.target.value }))}
             className="bg-slate-800 border-slate-700"
+            disabled={isLocked}
             required
           />
         </div>
         <div className="space-y-2">
           <Label>Direction</Label>
-          <Select value={formData.direction} onValueChange={v => setFormData(p => ({ ...p, direction: v }))}>
+          <Select value={formData.direction} onValueChange={v => setFormData(p => ({ ...p, direction: v }))} disabled={isLocked}>
             <SelectTrigger className="bg-slate-800 border-slate-700">
               <SelectValue />
             </SelectTrigger>
@@ -101,6 +112,7 @@ export const TradeForm = ({ strategyType, isBacktest, onSuccess }: TradeFormProp
             value={formData.entry} 
             onChange={e => setFormData(p => ({ ...p, entry: e.target.value }))}
             className="bg-slate-800 border-slate-700"
+            disabled={isLocked}
             required
           />
         </div>
@@ -112,6 +124,7 @@ export const TradeForm = ({ strategyType, isBacktest, onSuccess }: TradeFormProp
             value={formData.riskPercent} 
             onChange={e => setFormData(p => ({ ...p, riskPercent: e.target.value }))}
             className="bg-slate-800 border-slate-700"
+            disabled={isLocked}
             required
           />
         </div>
@@ -127,6 +140,7 @@ export const TradeForm = ({ strategyType, isBacktest, onSuccess }: TradeFormProp
                 checked={checklist[item] || false} 
                 onCheckedChange={(checked) => setChecklist(prev => ({ ...prev, [item]: !!checked }))}
                 className="border-slate-600 data-[state=checked]:bg-blue-500"
+                disabled={isLocked}
               />
               <Label htmlFor={item} className="text-sm text-slate-300 cursor-pointer">{item}</Label>
             </div>
@@ -140,12 +154,13 @@ export const TradeForm = ({ strategyType, isBacktest, onSuccess }: TradeFormProp
           value={formData.notes} 
           onChange={e => setFormData(p => ({ ...p, notes: e.target.value }))}
           className="bg-slate-800 border-slate-700"
+          disabled={isLocked}
         />
       </div>
 
       <Button 
         type="submit" 
-        disabled={loading || !allChecked} 
+        disabled={loading || !allChecked || isLocked} 
         className="w-full bg-blue-600 hover:bg-blue-700 py-6 text-lg font-bold"
       >
         {loading ? <Loader2 className="animate-spin" /> : (
