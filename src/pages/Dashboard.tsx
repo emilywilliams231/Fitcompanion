@@ -5,10 +5,11 @@ import { LocksAlert } from "@/components/trading/LocksAlert";
 import { TradeCard } from "@/components/trading/TradeCard";
 import { KeyLevelsManager } from "@/components/trading/KeyLevelsManager";
 import { StatsCard } from "@/components/trading/StatsCard";
+import { RiskCalculator } from "@/components/trading/RiskCalculator";
 import { LossReflectionModal } from "@/components/trading/LossReflectionModal";
 import { Badge } from "@/components/ui/badge";
 import { Trade } from "@/types/trading";
-import { Calendar, Target, TrendingUp } from "lucide-react";
+import { Calendar, Target, TrendingUp, ClipboardList } from "lucide-react";
 
 const Dashboard = () => {
   const [trades, setTrades] = useState<Trade[]>([]);
@@ -60,39 +61,71 @@ const Dashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-6">
-            <div className="flex items-center justify-between">
+          <div className="lg:col-span-2 space-y-8">
+            <section className="space-y-4">
               <h2 className="text-xl font-bold flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-blue-500" />
                 Recent Activity
               </h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {trades.length === 0 ? (
-                <div className="col-span-full text-center py-12 bg-slate-900/30 rounded-3xl border border-slate-800 text-slate-500">
-                  No trades logged yet.
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {trades.length === 0 ? (
+                  <div className="col-span-full text-center py-12 bg-slate-900/30 rounded-3xl border border-slate-800 text-slate-500">
+                    No trades logged yet.
+                  </div>
+                ) : (
+                  trades.slice(0, 4).map((trade) => (
+                    <TradeCard 
+                      key={trade.id} 
+                      trade={trade} 
+                      onUpdate={fetchData}
+                      onLoss={(id) => setReflectionTradeId(id)}
+                    />
+                  ))
+                )}
+              </div>
+            </section>
+
+            <section className="space-y-4">
+              <h2 className="text-xl font-bold flex items-center gap-2">
+                <ClipboardList className="w-5 h-5 text-blue-500" />
+                Daily Trading Plan
+              </h2>
+              <div className="p-6 rounded-3xl bg-slate-900/50 border border-slate-800">
+                <p className="text-sm text-slate-400 italic mb-4">"Plan the trade, trade the plan."</p>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-800/30 border border-slate-800/50">
+                    <div className="w-2 h-2 rounded-full bg-blue-500" />
+                    <span className="text-sm text-slate-300">Check high-impact news (ForexFactory)</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-800/30 border border-slate-800/50">
+                    <div className="w-2 h-2 rounded-full bg-blue-500" />
+                    <span className="text-sm text-slate-300">Identify HTF bias on primary pairs</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-800/30 border border-slate-800/50">
+                    <div className="w-2 h-2 rounded-full bg-blue-500" />
+                    <span className="text-sm text-slate-300">Mark out key liquidity zones & OBs</span>
+                  </div>
                 </div>
-              ) : (
-                trades.slice(0, 4).map((trade) => (
-                  <TradeCard 
-                    key={trade.id} 
-                    trade={trade} 
-                    onUpdate={fetchData}
-                    onLoss={(id) => setReflectionTradeId(id)}
-                  />
-                ))
-              )}
-            </div>
+              </div>
+            </section>
           </div>
 
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
+          <div className="space-y-8">
+            <section className="space-y-4">
+              <h2 className="text-xl font-bold flex items-center gap-2">
+                <Target className="w-5 h-5 text-blue-500" />
+                Risk Management
+              </h2>
+              <RiskCalculator />
+            </section>
+
+            <section className="space-y-4">
               <h2 className="text-xl font-bold flex items-center gap-2">
                 <Target className="w-5 h-5 text-blue-500" />
                 Key Levels
               </h2>
-            </div>
-            <KeyLevelsManager />
+              <KeyLevelsManager />
+            </section>
           </div>
         </div>
       </div>
