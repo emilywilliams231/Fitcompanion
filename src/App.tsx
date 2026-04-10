@@ -13,6 +13,7 @@ import JournalLiquidity from "./pages/JournalLiquidity";
 import JournalRetail from "./pages/JournalRetail";
 import History from "./pages/History";
 import Settings from "./pages/Settings";
+import TradeDetails from "./pages/TradeDetails";
 import NotFound from "./pages/NotFound";
 import { AuthGuard } from "./components/AuthGuard";
 
@@ -37,6 +38,7 @@ const App = () => (
           <Route path="/journal-retail" element={<AuthGuard><JournalRetail /></AuthGuard>} />
           <Route path="/history" element={<AuthGuard><History /></AuthGuard>} />
           <Route path="/settings" element={<AuthGuard><Settings /></AuthGuard>} />
+          <Route path="/trade/:id" element={<AuthGuard><TradeDetails /></AuthGuard>} />
           
           <Route path="*" element={<NotFound />} />
         </Routes>

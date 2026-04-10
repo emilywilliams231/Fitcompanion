@@ -1,10 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Trade } from "@/types/trading";
-import { TrendingUp, TrendingDown, Clock, CheckCircle2, XCircle, MessageSquare } from "lucide-react";
+import { TrendingUp, TrendingDown, Clock, CheckCircle2, XCircle, MessageSquare, ExternalLink } from "lucide-react";
 import { format, addMinutes, startOfWeek, nextMonday } from "date-fns";
 import { cn } from "@/lib/utils";
 import { showSuccess, showError } from "@/utils/toast";
@@ -17,6 +18,7 @@ interface TradeCardProps {
 
 export const TradeCard = ({ trade, onUpdate, onLoss }: TradeCardProps) => {
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const updateResult = async (result: 'win' | 'loss') => {
     setLoading(true);
@@ -70,7 +72,7 @@ export const TradeCard = ({ trade, onUpdate, onLoss }: TradeCardProps) => {
   };
 
   return (
-    <Card className="bg-slate-900 border-slate-800 text-white overflow-hidden hover:border-slate-700 transition-colors">
+    <Card className="bg-slate-900 border-slate-800 text-white overflow-hidden hover:border-slate-700 transition-colors group">
       <CardContent className="p-0">
         <div className="p-4 flex items-center justify-between border-b border-slate-800/50">
           <div className="flex items-center gap-3">
@@ -91,16 +93,26 @@ export const TradeCard = ({ trade, onUpdate, onLoss }: TradeCardProps) => {
               </div>
             </div>
           </div>
-          <div className="text-right">
-            <Badge className={cn(
-              "capitalize",
-              trade.result === 'win' ? "bg-green-500/20 text-green-500 border-green-500/20" :
-              trade.result === 'loss' ? "bg-red-500/20 text-red-500 border-red-500/20" :
-              "bg-slate-800 text-slate-400 border-slate-700"
-            )}>
-              {trade.result}
-            </Badge>
-            <div className="text-xs text-slate-500 mt-1">{trade.riskPercent}% Risk</div>
+          <div className="flex items-center gap-3">
+            <div className="text-right">
+              <Badge className={cn(
+                "capitalize",
+                trade.result === 'win' ? "bg-green-500/20 text-green-500 border-green-500/20" :
+                trade.result === 'loss' ? "bg-red-500/20 text-red-500 border-red-500/20" :
+                "bg-slate-800 text-slate-400 border-slate-700"
+              )}>
+                {trade.result}
+              </Badge>
+              <div className="text-xs text-slate-500 mt-1">{trade.riskPercent}% Risk</div>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => navigate(`/trade/${trade.id}`)}
+              className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-500 hover:text-white"
+            >
+              <ExternalLink size={16} />
+            </Button>
           </div>
         </div>
 
@@ -119,7 +131,7 @@ export const TradeCard = ({ trade, onUpdate, onLoss }: TradeCardProps) => {
           <div className="px-4 pb-4">
             <div className="flex items-start gap-2 p-3 rounded-lg bg-slate-800/30 border border-slate-800/50">
               <MessageSquare size={14} className="text-slate-500 mt-0.5 shrink-0" />
-              <p className="text-xs text-slate-400 italic">{trade.notes}</p>
+              <p className="text-xs text-slate-400 italic line-clamp-1">{trade.notes}</p>
             </div>
           </div>
         )}

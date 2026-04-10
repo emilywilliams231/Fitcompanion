@@ -6,9 +6,9 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { LIQUIDITY_CHECKLIST, RETAIL_CHECKLIST, StrategyName, TradeMood } from "@/types/trading";
+import { LIQUIDITY_CHECKLIST, RETAIL_CHECKLIST, StrategyName, TradeMood, TradingSession } from "@/types/trading";
 import { showSuccess, showError } from "@/utils/toast";
-import { Loader2, CheckCircle2, Lock, Smile, Frown, Meh, Zap, AlertCircle } from "lucide-react";
+import { Loader2, CheckCircle2, Lock, Smile, Frown, Meh, Zap, AlertCircle, Globe } from "lucide-react";
 import { useLocks } from "@/hooks/useLocks";
 import { cn } from "@/lib/utils";
 
@@ -37,6 +37,7 @@ export const TradeForm = ({ strategyType, isBacktest, onSuccess }: TradeFormProp
     riskPercent: "1.0",
     notes: "",
     mood: "confident" as TradeMood,
+    session: "london" as TradingSession,
     screenshotUrl: ""
   });
 
@@ -61,6 +62,7 @@ export const TradeForm = ({ strategyType, isBacktest, onSuccess }: TradeFormProp
         risk_percent: parseFloat(formData.riskPercent),
         notes: formData.notes,
         mood: formData.mood,
+        session: formData.session,
         screenshot_url: formData.screenshotUrl,
         is_backtest: isBacktest,
         strategy_name: strategyType,
@@ -71,7 +73,7 @@ export const TradeForm = ({ strategyType, isBacktest, onSuccess }: TradeFormProp
       if (error) throw error;
 
       showSuccess("Trade logged successfully!");
-      setFormData({ pair: "", direction: "long", entry: "", riskPercent: "1.0", notes: "", mood: "confident", screenshotUrl: "" });
+      setFormData({ pair: "", direction: "long", entry: "", riskPercent: "1.0", notes: "", mood: "confident", session: "london", screenshotUrl: "" });
       setChecklist({});
       onSuccess();
     } catch (err: any) {
@@ -103,6 +105,24 @@ export const TradeForm = ({ strategyType, isBacktest, onSuccess }: TradeFormProp
           />
         </div>
         <div className="space-y-2">
+          <Label>Session</Label>
+          <Select value={formData.session} onValueChange={v => setFormData(p => ({ ...p, session: v as TradingSession }))} disabled={isLocked}>
+            <SelectTrigger className="bg-slate-800 border-slate-700">
+              <Globe className="w-4 h-4 mr-2 text-slate-500" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-slate-800 border-slate-700 text-white">
+              <SelectItem value="london">London</SelectItem>
+              <SelectItem value="new_york">New York</SelectItem>
+              <SelectItem value="asia">Asia</SelectItem>
+              <SelectItem value="overlap">NY/London Overlap</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
           <Label>Direction</Label>
           <Select value={formData.direction} onValueChange={v => setFormData(p => ({ ...p, direction: v }))} disabled={isLocked}>
             <SelectTrigger className="bg-slate-800 border-slate-700">
@@ -113,21 +133,6 @@ export const TradeForm = ({ strategyType, isBacktest, onSuccess }: TradeFormProp
               <SelectItem value="short">Short</SelectItem>
             </SelectContent>
           </Select>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label>Entry Price</Label>
-          <Input 
-            type="number" 
-            step="0.00001" 
-            value={formData.entry} 
-            onChange={e => setFormData(p => ({ ...p, entry: e.target.value }))}
-            className="bg-slate-800 border-slate-700"
-            disabled={isLocked}
-            required
-          />
         </div>
         <div className="space-y-2">
           <Label>Risk (%)</Label>
@@ -141,6 +146,19 @@ export const TradeForm = ({ strategyType, isBacktest, onSuccess }: TradeFormProp
             required
           />
         </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label>Entry Price</Label>
+        <Input 
+          type="number" 
+          step="0.00001" 
+          value={formData.entry} 
+          onChange={e => setFormData(p => ({ ...p, entry: e.target.value }))}
+          className="bg-slate-800 border-slate-700"
+          disabled={isLocked}
+          required
+        />
       </div>
 
       <div className="space-y-3">

@@ -4,6 +4,7 @@ export type Direction = 'long' | 'short';
 export type TradeResult = 'win' | 'loss' | 'pending';
 export type StrategyName = 'liquidity' | 'retail';
 export type TradeMood = 'confident' | 'anxious' | 'neutral' | 'fomo' | 'revenge';
+export type TradingSession = 'london' | 'new_york' | 'asia' | 'overlap';
 
 export interface UserSettings {
   traderType: TraderType;
@@ -40,6 +41,7 @@ export interface Trade {
   strategyName: StrategyName;
   confirmedChecklist: Record<string, boolean>;
   mood: TradeMood;
+  session: TradingSession;
   screenshotUrl?: string;
   createdAt: string;
 }
