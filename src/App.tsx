@@ -5,10 +5,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
-import Equipment from "./pages/Equipment";
-import WorkoutGenerator from "./pages/WorkoutGenerator";
-import WorkoutGuide from "./pages/WorkoutGuide";
+import Onboarding from "./pages/Onboarding";
+import Dashboard from "./pages/Dashboard";
+import JournalLiquidity from "./pages/JournalLiquidity";
+import JournalRetail from "./pages/JournalRetail";
 import History from "./pages/History";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import { AuthGuard } from "./components/AuthGuard";
 
@@ -25,10 +27,12 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           
           {/* Protected Routes */}
-          <Route path="/equipment" element={<AuthGuard><Equipment /></AuthGuard>} />
-          <Route path="/workout-generator" element={<AuthGuard><WorkoutGenerator /></AuthGuard>} />
-          <Route path="/workout-guide" element={<AuthGuard><WorkoutGuide /></AuthGuard>} />
+          <Route path="/onboarding" element={<AuthGuard><Onboarding /></AuthGuard>} />
+          <Route path="/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />
+          <Route path="/journal-liquidity" element={<AuthGuard><JournalLiquidity /></AuthGuard>} />
+          <Route path="/journal-retail" element={<AuthGuard><JournalRetail /></AuthGuard>} />
           <Route path="/history" element={<AuthGuard><History /></AuthGuard>} />
+          <Route path="/settings" element={<AuthGuard><Settings /></AuthGuard>} />
           
           <Route path="*" element={<NotFound />} />
         </Routes>
