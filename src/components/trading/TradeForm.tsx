@@ -6,16 +6,25 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { LIQUIDITY_CHECKLIST, RETAIL_CHECKLIST, StrategyName } from "@/types/trading";
+import { LIQUIDITY_CHECKLIST, RETAIL_CHECKLIST, StrategyName, TradeMood } from "@/types/trading";
 import { showSuccess, showError } from "@/utils/toast";
-import { Loader2, CheckCircle2, Lock } from "lucide-react";
+import { Loader2, CheckCircle2, Lock, Smile, Frown, Meh, Zap, AlertCircle } from "lucide-react";
 import { useLocks } from "@/hooks/useLocks";
+import { cn } from "@/lib/utils";
 
 interface TradeFormProps {
   strategyType: StrategyName;
   isBacktest: boolean;
   onSuccess: () => void;
 }
+
+const MOODS: { value: TradeMood; label: string; icon: any; color: string }[] = [
+  { value: 'confident', label: 'Confident', icon: Zap, color: 'text-green-500' },
+  { value: 'neutral', label: 'Neutral', icon: Meh, color: 'text-blue-500' },
+  { value: 'anxious', label: 'Anxious', icon: AlertCircle, color: 'text-yellow-500' },
+  { value: 'fomo', label: 'FOMO', icon: Frown, color: 'text-orange-500' },
+  { value: 'revenge', label: 'Revenge', icon: AlertCircle, color: 'text-red-500' },
+];
 
 export const TradeForm = ({ strategyType, isBacktest, onSuccess }: TradeFormProps) => {
   const [loading, setLoading] = useState(false);
@@ -26,7 +35,9 @@ export const TradeForm = ({ strategyType, isBacktest, onSuccess }: TradeFormProp
     direction: "long",
     entry: "",
     riskPercent: "1.0",
-    notes: ""
+    notes: "",
+    mood: "confident" as TradeMood,
+    screenshotUrl: ""
   });
 
   const items = strategyType === 'liquidity' ? LIQUIDITY_CHECKLIST : RETAIL_CHECKLIST;
@@ -49,6 +60,8 @@ export const TradeForm = ({ strategyType, isBacktest, onSuccess }: TradeFormProp
         entry: parseFloat(formData.entry),
         risk_percent: parseFloat(formData.riskPercent),
         notes: formData.notes,
+        mood: formData.mood,
+        screenshot_url: formData.screenshotUrl,
         is_backtest: isBacktest,
         strategy_name: strategyType,
         confirmed_checklist: checklist,
@@ -58,7 +71,7 @@ export const TradeForm = ({ strategyType, isBacktest, onSuccess }: TradeFormProp
       if (error) throw error;
 
       showSuccess("Trade logged successfully!");
-      setFormData({ pair: "", direction: "long", entry: "", riskPercent: "1.0", notes: "" });
+      setFormData({ pair: "", direction: "long", entry: "", riskPercent: "1.0", notes: "", mood: "confident", screenshotUrl: "" });
       setChecklist({});
       onSuccess();
     } catch (err: any) {
@@ -131,6 +144,29 @@ export const TradeForm = ({ strategyType, isBacktest, onSuccess }: TradeFormProp
       </div>
 
       <div className="space-y-3">
+        <Label className="text-blue-400 font-bold">Psychology & Mindset</Label>
+        <div className="grid grid-cols-5 gap-2">
+          {MOODS.map((m) => (
+            <button
+              key={m.value}
+              type="button"
+              onClick={() => setFormData(p => ({ ...p, mood: m.value }))}
+              disabled={isLocked}
+              className={cn(
+                "flex flex-col items-center gap-1 p-2 rounded-xl border transition-all",
+                formData.mood === m.value 
+                  ? "bg-blue-500/10 border-blue-500/50" 
+                  : "bg-slate-800/50 border-slate-700 hover:border-slate-600"
+              )}
+            >
+              <m.icon className={cn("w-5 h-5", formData.mood === m.value ? m.color : "text-slate-500")} />
+              <span className="text-[8px] uppercase font-bold tracking-tighter">{m.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-3">
         <Label className="text-blue-400 font-bold">Confirmation Checklist</Label>
         <div className="space-y-2 bg-slate-800/50 p-4 rounded-xl border border-slate-800">
           {items.map((item) => (
@@ -155,6 +191,7 @@ export const TradeForm = ({ strategyType, isBacktest, onSuccess }: TradeFormProp
           onChange={e => setFormData(p => ({ ...p, notes: e.target.value }))}
           className="bg-slate-800 border-slate-700"
           disabled={isLocked}
+          placeholder="Describe the setup, HTF bias, or any emotions felt..."
         />
       </div>
 

@@ -3,6 +3,7 @@ export type Timeframe = '1m' | '5m' | '15m' | '30m' | '1h' | '4h' | 'Daily' | 'W
 export type Direction = 'long' | 'short';
 export type TradeResult = 'win' | 'loss' | 'pending';
 export type StrategyName = 'liquidity' | 'retail';
+export type TradeMood = 'confident' | 'anxious' | 'neutral' | 'fomo' | 'revenge';
 
 export interface UserSettings {
   traderType: TraderType;
@@ -38,6 +39,8 @@ export interface Trade {
   isBacktest: boolean;
   strategyName: StrategyName;
   confirmedChecklist: Record<string, boolean>;
+  mood: TradeMood;
+  screenshotUrl?: string;
   createdAt: string;
 }
 

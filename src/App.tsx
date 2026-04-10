@@ -8,6 +8,7 @@ import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
 import Analytics from "./pages/Analytics";
+import Calendar from "./pages/Calendar";
 import JournalLiquidity from "./pages/JournalLiquidity";
 import JournalRetail from "./pages/JournalRetail";
 import History from "./pages/History";
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/onboarding" element={<AuthGuard><Onboarding /></AuthGuard>} />
           <Route path="/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />
           <Route path="/analytics" element={<AuthGuard><Analytics /></AuthGuard>} />
+          <Route path="/calendar" element={<AuthGuard><Calendar /></AuthGuard>} />
           <Route path="/journal-liquidity" element={<AuthGuard><JournalLiquidity /></AuthGuard>} />
           <Route path="/journal-retail" element={<AuthGuard><JournalRetail /></AuthGuard>} />
           <Route path="/history" element={<AuthGuard><History /></AuthGuard>} />
